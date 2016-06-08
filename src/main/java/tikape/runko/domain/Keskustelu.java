@@ -12,6 +12,10 @@ public class Keskustelu {
         this.aihe = aihe;
     }
 
+    public Keskustelu(Integer id, String alue, String aihe) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public Integer getId() {
         return id;
     }

@@ -42,9 +42,9 @@ public class Database {
         lista.add("CREATE TABLE Alue (nimi varchar(100) PRIMARY KEY);");
         lista.add("CREATE TABLE Keskustelu(id integer PRIMARY KEY,aihe varchar(100) NOT NULL,alue varchar(100) NOT NULL,FOREIGN KEY(alue) REFERENCES Alue(nimi));");
         lista.add("CREATE TABLE Viesti (aika timestamp NOT NULL, sisalto varchar(5000) NOT NULL, keskustelu integer NOT NULL,FOREIGN KEY(keskustelu) REFERENCES Keskustelu(id));");
-        lista.add("INSERT INTO Opiskelija (nimi) VALUES ('Platon');");
-        lista.add("INSERT INTO Opiskelija (nimi) VALUES ('Aristoteles');");
-        lista.add("INSERT INTO Opiskelija (nimi) VALUES ('Homeros');");
+        lista.add("INSERT INTO Alue (nimi) VALUES ('Ohjelmointi');");
+        lista.add("INSERT INTO Alue (nimi) VALUES ('Urheilu');");
+        lista.add("INSERT INTO Alue (nimi) VALUES ('Uutiset');");
 
         return lista;
     }

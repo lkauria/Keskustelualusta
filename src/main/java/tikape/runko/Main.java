@@ -10,10 +10,10 @@ import tikape.runko.database.AlueDao;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Database database = new Database("jdbc:sqlite:opiskelijat.db");
+        Database database = new Database("jdbc:sqlite:keskustelualue.db");
         database.init();
 
-        AlueDao opiskelijaDao = new AlueDao(database);
+        AlueDao alueDao = new AlueDao(database);
 
         get("/", (req, res) -> {
             HashMap map = new HashMap<>();
@@ -22,18 +22,18 @@ public class Main {
             return new ModelAndView(map, "index");
         }, new ThymeleafTemplateEngine());
 
-        get("/opiskelijat", (req, res) -> {
+        get("/alueet", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("opiskelijat", opiskelijaDao.findAll());
+            map.put("alueet", alueDao.findAll());
 
-            return new ModelAndView(map, "opiskelijat");
+            return new ModelAndView(map, "alueet");
         }, new ThymeleafTemplateEngine());
 
-        get("/opiskelijat/:id", (req, res) -> {
+        get("/alueet/:nimi", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("opiskelija", opiskelijaDao.findOne(Integer.parseInt(req.params("id"))));
+            map.put("alue", alueDao.findOne(Integer.parseInt(req.params("nimi"))));
 
-            return new ModelAndView(map, "opiskelija");
+            return new ModelAndView(map, "alue");
         }, new ThymeleafTemplateEngine());
     }
 }
