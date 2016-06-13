@@ -10,8 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import tikape.runko.domain.Alue;
+import tikape.runko.domain.Keskustelu;
 
 public class AlueDao implements Dao<Alue, Integer> {
 
@@ -60,6 +62,37 @@ public class AlueDao implements Dao<Alue, Integer> {
         rs.close();
         stmt.close();
         connection.close();
+
+        return alueet;
+    }
+
+    public List<Alue> findAllIn(Collection<Integer> keys) throws SQLException {
+        if (keys.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Luodaan IN-kyselyä varten paikat, joihin arvot asetetaan --
+        // toistaiseksi IN-parametrille ei voi antaa suoraan kokoelmaa
+        StringBuilder muuttujat = new StringBuilder("?");
+        for (int i = 1; i < keys.size(); i++) {
+            muuttujat.append(", ?");
+        }
+
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Alue WHERE nimi IN (" + muuttujat + ")");
+        int laskuri = 1;
+        for (Integer key : keys) {
+            stmt.setObject(laskuri, key);
+            laskuri++;
+        }
+
+        ResultSet rs = stmt.executeQuery();
+        List<Alue> alueet = new ArrayList<>();
+        while (rs.next()) {
+            String nimi = rs.getString("nimi");
+
+            alueet.add(new Alue(nimi));
+        }
 
         return alueet;
     }

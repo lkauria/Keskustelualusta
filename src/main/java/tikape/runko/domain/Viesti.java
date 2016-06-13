@@ -10,10 +10,13 @@ public class Viesti {
     private Timestamp aika;
     private String sisalto;
 
-    public Viesti(Keskustelu keskustelu, Timestamp aika, String sisalto) {
-        this.keskustelu = keskustelu;
+    public Viesti(Timestamp aika, String sisalto) {
         this.aika = aika;
         this.sisalto = sisalto;
+    }
+
+    public Viesti(Integer keskustelu, Timestamp aika, String sisalto) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public Keskustelu getKeskustelu() {
