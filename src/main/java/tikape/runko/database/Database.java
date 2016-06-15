@@ -45,6 +45,8 @@ public class Database {
         lista.add("INSERT INTO Alue (nimi) VALUES ('Ohjelmointi');");
         lista.add("INSERT INTO Alue (nimi) VALUES ('Urheilu');");
         lista.add("INSERT INTO Alue (nimi) VALUES ('Uutiset');");
+        lista.add("INSERT INTO Keskustelu (aihe, alue) VALUES ('Java', 'Ohjelmointi');");
+        lista.add("INSERT INTO Keskustelu (aihe, alue) VALUES ('Lisp', 'Ohjelmointi');");
 
         return lista;
     }

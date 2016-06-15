@@ -83,7 +83,6 @@ public class ViestiDao implements Dao<Viesti, Integer> {
         return viestit;
     }
 
-    @Override
     public List<Viesti> findAllIn(Collection<Integer> keys) throws SQLException {
         if (keys.isEmpty()) {
             return new ArrayList<>();
@@ -125,4 +124,9 @@ public class ViestiDao implements Dao<Viesti, Integer> {
     //public Keskustelu findOne(Integer key) throws SQLException {
     // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     //}
+
+    @Override
+    public List<Viesti> findAllIn(String n) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

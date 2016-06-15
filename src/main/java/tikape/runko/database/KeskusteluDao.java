@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import tikape.runko.domain.Alue;
 import tikape.runko.domain.Keskustelu;
 import tikape.runko.domain.Viesti;
 
@@ -39,8 +40,9 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 
         Integer id = rs.getInt("id");
         String alue = rs.getString("alue");
+        Alue a = new AlueDao(database).findOne(alue);
         String aihe = rs.getString("aihe");
-        Keskustelu o = new Keskustelu(id, alue, aihe);
+        Keskustelu o = new Keskustelu(id, a, aihe);
 
         rs.close();
         stmt.close();
@@ -83,26 +85,26 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         return keskustelut;
     }
 
-    @Override
-    public List<Keskustelu> findAllIn(Collection<Integer> keys) throws SQLException {
-        if (keys.isEmpty()) {
+    public List<Keskustelu> findAllIn(String alueenNimi) throws SQLException {
+        if (alueenNimi.isEmpty()) {
             return new ArrayList<>();
         }
 
         // Luodaan IN-kyselyä varten paikat, joihin arvot asetetaan --
         // toistaiseksi IN-parametrille ei voi antaa suoraan kokoelmaa
-        StringBuilder muuttujat = new StringBuilder("?");
-        for (int i = 1; i < keys.size(); i++) {
-            muuttujat.append(", ?");
-        }
+//        StringBuilder muuttujat = new StringBuilder("?");
+//        for (int i = 1; i < alueenNimi.size(); i++) {
+//            muuttujat.append(", ?");
+//        }
 
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu WHERE id IN (" + muuttujat + ")");
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu WHERE alue = ?");
+        stmt.setString(1, alueenNimi);
         int laskuri = 1;
-        for (Integer key : keys) {
-            stmt.setObject(laskuri, key);
-            laskuri++;
-        }
+//        for (Integer key : keys) {
+//            stmt.setObject(laskuri, key);
+//            laskuri++;
+//        }
 
         ResultSet rs = stmt.executeQuery();
         List<Keskustelu> keskustelut = new ArrayList<>();
@@ -110,8 +112,9 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
             Integer id = rs.getInt("id");
             String alue = rs.getString("alue");
             String aihe = rs.getString("aihe");
-
-            keskustelut.add(new Keskustelu(id, alue, aihe));
+            AlueDao a = new AlueDao(database);
+            Alue ab = a.findOne(aihe);
+            keskustelut.add(new Keskustelu(id, ab, aihe));
         }
 
         return keskustelut;
@@ -126,4 +129,6 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
     //public Keskustelu findOne(Integer key) throws SQLException {
     // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     //}
+
+  
 }

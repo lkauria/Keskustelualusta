@@ -16,9 +16,10 @@ public class Keskustelu {
         this.viestit = new ArrayList<>();
     }
 
-    public Keskustelu(Integer id, String alue, String aihe) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        
+    public Keskustelu(Integer id, Alue alue, String aihe) {
+       this.id = id;
+       this.alue = alue;
+       this.aihe = aihe;
     }
 
 
