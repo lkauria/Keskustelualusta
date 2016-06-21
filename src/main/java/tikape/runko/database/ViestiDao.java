@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import tikape.runko.domain.Alue;
 import tikape.runko.domain.Keskustelu;
 import tikape.runko.domain.Viesti;
 
@@ -37,10 +38,11 @@ public class ViestiDao implements Dao<Viesti, Integer> {
             return null;
         }
 
-        Integer keskustelu = rs.getInt("keskustelu");
+        Integer id = rs.getInt("id");
         Timestamp aika = rs.getTimestamp("aika");
         String sisalto = rs.getString("sisalto");
-        Viesti o = new Viesti(keskustelu, aika, sisalto);
+        Keskustelu k = new KeskusteluDao(database).findOne(id);
+        Viesti o = new Viesti(id, k, aika, sisalto);
 
         rs.close();
         stmt.close();
@@ -62,10 +64,11 @@ public class ViestiDao implements Dao<Viesti, Integer> {
 
         while (rs.next()) {
 
+            Integer id = rs.getInt("id");
             Timestamp aika = rs.getTimestamp("aika");
             String sisalto = rs.getString("sisalto");
-
-            Viesti v = new Viesti(aika, sisalto);
+            Keskustelu k = new KeskusteluDao(database).findOne(id);
+            Viesti v = new Viesti(id, k, aika, sisalto);
             viestit.add(v);
 
             Integer keskustelu = rs.getInt("keskustelu");
@@ -75,7 +78,7 @@ public class ViestiDao implements Dao<Viesti, Integer> {
             }
             viestienKeskustelut.get(keskustelu).add(v);
         }
-        
+
         rs.close();
         stmt.close();
         connection.close();
@@ -106,10 +109,12 @@ public class ViestiDao implements Dao<Viesti, Integer> {
         ResultSet rs = stmt.executeQuery();
         List<Viesti> viestit = new ArrayList<>();
         while (rs.next()) {
+            Integer id = rs.getInt("id");
             Timestamp aika = rs.getTimestamp("aika");
             String sisalto = rs.getString("sisalto");
-
-            viestit.add(new Viesti(aika, sisalto));
+            KeskusteluDao k = new KeskusteluDao(database);
+            Keskustelu ab = k.findOne(id);
+            viestit.add(new Viesti(id, ab, aika, sisalto));
         }
 
         return viestit;
@@ -124,9 +129,42 @@ public class ViestiDao implements Dao<Viesti, Integer> {
     //public Keskustelu findOne(Integer key) throws SQLException {
     // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     //}
-
-    @Override
     public List<Viesti> findAllIn(String n) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Viesti> findAllIn(Integer keskustelunId) throws SQLException {
+        if (keskustelunId == null) {
+            return new ArrayList<>();
+        }
+
+        // Luodaan IN-kyselyä varten paikat, joihin arvot asetetaan --
+        // toistaiseksi IN-parametrille ei voi antaa suoraan kokoelmaa
+//        StringBuilder muuttujat = new StringBuilder("?");
+//        for (int i = 1; i < alueenNimi.size(); i++) {
+//            muuttujat.append(", ?");
+//        }
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Viesti WHERE keskustelu = ?");
+        stmt.setInt(1, keskustelunId);
+        int laskuri = 1;
+//        for (Integer key : keys) {
+//            stmt.setObject(laskuri, key);
+//            laskuri++;
+//        }
+
+        ResultSet rs = stmt.executeQuery();
+        List<Viesti> viestit = new ArrayList<>();
+        while (rs.next()) {
+            Integer id = rs.getInt("id");
+            Timestamp aika = rs.getTimestamp("aika");
+            String sisalto = rs.getString("sisalto");
+            KeskusteluDao k = new KeskusteluDao(database);
+            Keskustelu ab = k.findOne(id);
+            viestit.add(new Viesti(id, ab, aika, sisalto));
+        }
+
+        return viestit;
     }
 }

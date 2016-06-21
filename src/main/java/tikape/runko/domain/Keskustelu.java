@@ -20,6 +20,7 @@ public class Keskustelu {
        this.id = id;
        this.alue = alue;
        this.aihe = aihe;
+       this.viestit = new ArrayList<>();
     }
 
 
@@ -45,6 +46,14 @@ public class Keskustelu {
 
     public void setAihe(String aihe) {
         this.aihe = aihe;
+    }
+
+    public List<Viesti> getViestit() {
+        return viestit;
+    }
+
+    public void setViestit(List<Viesti> viestit) {
+        this.viestit = viestit;
     }
 
 }

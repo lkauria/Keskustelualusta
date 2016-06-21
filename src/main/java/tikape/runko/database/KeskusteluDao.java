@@ -39,8 +39,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         }
 
         Integer id = rs.getInt("id");
-        String alue = rs.getString("alue");
-        Alue a = new AlueDao(database).findOne(alue);
+        Alue a = new AlueDao(database).findOne(id);
         String aihe = rs.getString("aihe");
         Keskustelu o = new Keskustelu(id, a, aihe);
 
@@ -85,8 +84,8 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         return keskustelut;
     }
 
-    public List<Keskustelu> findAllIn(String alueenNimi) throws SQLException {
-        if (alueenNimi.isEmpty()) {
+    public List<Keskustelu> findAllIn(Integer alueenId) throws SQLException {
+        if (alueenId == null) {
             return new ArrayList<>();
         }
 
@@ -99,7 +98,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu WHERE alue = ?");
-        stmt.setString(1, alueenNimi);
+        stmt.setInt(1, alueenId);
         int laskuri = 1;
 //        for (Integer key : keys) {
 //            stmt.setObject(laskuri, key);
@@ -110,10 +109,9 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         List<Keskustelu> keskustelut = new ArrayList<>();
         while (rs.next()) {
             Integer id = rs.getInt("id");
-            String alue = rs.getString("alue");
             String aihe = rs.getString("aihe");
             AlueDao a = new AlueDao(database);
-            Alue ab = a.findOne(aihe);
+            Alue ab = a.findOne(id);
             keskustelut.add(new Keskustelu(id, ab, aihe));
         }
 

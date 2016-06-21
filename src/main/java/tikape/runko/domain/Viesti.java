@@ -6,17 +6,24 @@ import java.sql.Timestamp;
 
 public class Viesti {
     
+    private Integer id;
     private Keskustelu keskustelu;
     private Timestamp aika;
     private String sisalto;
 
-    public Viesti(Timestamp aika, String sisalto) {
+    public Viesti(Integer id, Keskustelu keskustelu, Timestamp aika, String sisalto) {
+        this.id = id;
+        this.keskustelu = keskustelu;
         this.aika = aika;
         this.sisalto = sisalto;
     }
 
-    public Viesti(Integer keskustelu, Timestamp aika, String sisalto) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Keskustelu getKeskustelu() {

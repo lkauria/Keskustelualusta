@@ -1,0 +1,28 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Otsikko</title>
+        <meta charset="utf-8" />
+    </head>
+
+    <body>
+        <h1><span th:text="${alue.nimi}"></span></h1>
+
+        <p>Olet saapunut alueelle <span th:text="${alue.nimi}">alue</span></p>
+        <ol>
+            <li th:each="keskustelu: ${keskustelut}">
+                <span th:text="${keskustelu.aihe}">keskustelun nimi</span> <a th:href="${'/keskustelut/' + keskustelu.id}">linkki</a>
+            </li>
+        </ol>
+        <div>Aloita uusi keskustelu:</div>
+        <form method="POST" action="/keskustelu/">
+            Otsikko:<br/>
+            <input type="text" name="aihe"/><br/>
+            Aloitusviesti:<br/>
+            <textarea rows="4" cols="50" name="viesti"></textarea> <br/>
+<!--            <input type="text" name="viesti"/><br/>-->
+            <input type="submit" value="Aloita keskustelu"/>
+        </form>
+    </body>
+</html>

@@ -11,14 +11,15 @@ import tikape.runko.database.AlueDao;
 import tikape.runko.database.*;
 import tikape.runko.domain.*;
 
-
 public class Main {
 
     public static void main(String[] args) throws Exception {
         Database database = new Database("jdbc:sqlite:keskustelualue.db");
-        database.init();
+        //database.init();
 
         AlueDao alueDao = new AlueDao(database);
+        KeskusteluDao keskusteluDao = new KeskusteluDao(database);
+        ViestiDao viestiDao = new ViestiDao(database);
 
         get("/", (req, res) -> {
             HashMap map = new HashMap<>();
@@ -34,14 +35,30 @@ public class Main {
             return new ModelAndView(map, "alueet");
         }, new ThymeleafTemplateEngine());
 
-        get("/alueet/Ohjelmointi", (req, res) -> {
-            KeskusteluDao kesk = new KeskusteluDao(database);
-            
+        get("/alueet/:id", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("alue", alueDao.findOne("Ohjelmointi"));
-            map.put("keskustelut", kesk.findAllIn("Ohjelmointi"));
+            map.put("alue", alueDao.findOne(Integer.parseInt(req.params("id"))));
+            map.put("keskustelut", keskusteluDao.findAllIn(Integer.parseInt(req.params("id"))));
 
-            return new ModelAndView(map, "ohjelmointi");
+            return new ModelAndView(map, "alue");
         }, new ThymeleafTemplateEngine());
+
+        post("/alueet/:id", (req, res) -> {
+            //ei toimi
+            return "Alue lisätty.";
+        });
+
+        get("/keskustelut/:id", (req, res) -> {
+            HashMap map = new HashMap<>();
+            map.put("keskustelu", keskusteluDao.findOne(Integer.parseInt(req.params("id"))));
+            map.put("viestit", viestiDao.findAllIn(Integer.parseInt(req.params("id"))));
+
+            return new ModelAndView(map, "keskustelu");
+        }, new ThymeleafTemplateEngine());
+
+        post("/keskustelut/:id", (req, res) -> {
+            //ei toimi
+            return "Viesti lähetetty.";
+        });
     }
 }
