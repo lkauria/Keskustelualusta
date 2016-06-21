@@ -61,7 +61,7 @@ public class ViestiDao implements Dao<Viesti, Integer> {
                 id = luku;
             }
         }
-        return id;
+        return id + 1;
     }
 
     @Override
