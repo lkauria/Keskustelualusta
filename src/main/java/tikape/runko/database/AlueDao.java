@@ -78,4 +78,15 @@ public class AlueDao implements Dao<Alue, Integer> {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public int palautaUusiId() throws SQLException {
+        List<Alue> alueet = this.findAll();
+        int id = 0;
+        for (Alue a : alueet) {
+            if (a.getId() > id) {
+                id = a.getId();
+            }
+        }
+        return id + 1;
+    }
+
 }

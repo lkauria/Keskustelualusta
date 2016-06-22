@@ -59,7 +59,9 @@ public class Main {
             stmt.execute();
             stmt.close();
             connection.close();
-            return "Alue lisätty.";
+            return "Alue lisätty." +
+                    "<a th:href=\"${'/alueet/>linkki</a>";
+            
         });
 
         get("/keskustelut/:id", (req, res) -> {
