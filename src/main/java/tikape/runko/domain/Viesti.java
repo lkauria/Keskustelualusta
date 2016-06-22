@@ -7,11 +7,11 @@ import java.sql.Timestamp;
 public class Viesti {
     
     private Integer id;
-    private Keskustelu keskustelu;
+    private int keskustelu;
     private Timestamp aika;
     private String sisalto;
 
-    public Viesti(Integer id, Keskustelu keskustelu, Timestamp aika, String sisalto) {
+    public Viesti(Integer id, Timestamp aika, String sisalto, int keskustelu) {
         this.id = id;
         this.keskustelu = keskustelu;
         this.aika = aika;
@@ -26,7 +26,7 @@ public class Viesti {
         this.id = id;
     }
 
-    public Keskustelu getKeskustelu() {
+    public int getKeskustelu() {
         return keskustelu;
     }
 
@@ -38,7 +38,7 @@ public class Viesti {
         return sisalto;
     }
 
-    public void setKeskustelu(Keskustelu keskustelu) {
+    public void setKeskustelu(int keskustelu) {
         this.keskustelu = keskustelu;
     }
 

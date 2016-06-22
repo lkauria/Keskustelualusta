@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import tikape.runko.domain.Alue;
-import tikape.runko.domain.Keskustelu;
+import tikape.runko.domain.keskustelu;
 
 public class AlueDao implements Dao<Alue, Integer> {
 

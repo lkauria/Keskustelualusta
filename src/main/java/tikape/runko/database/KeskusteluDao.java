@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import tikape.runko.domain.Alue;
-import tikape.runko.domain.Keskustelu;
+import tikape.runko.domain.keskustelu;
 import tikape.runko.domain.Viesti;
 
-public class KeskusteluDao implements Dao<Keskustelu, Integer> {
+public class KeskusteluDao implements Dao<keskustelu, Integer> {
 
     private Database database;
 
@@ -27,7 +27,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         this.database = database;
     }
 
-    public Keskustelu findOne(Integer key) throws SQLException {
+    public keskustelu findOne(Integer key) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu WHERE id = ?");
         stmt.setObject(1, key);
@@ -41,7 +41,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         Integer id = rs.getInt("id");
         Alue a = new AlueDao(database).findOne(id);
         String aihe = rs.getString("aihe");
-        Keskustelu o = new Keskustelu(id, a, aihe);
+        keskustelu o = new keskustelu(id, a, aihe);
 
         rs.close();
         stmt.close();
@@ -51,22 +51,22 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
     }
 
     @Override
-    public List<Keskustelu> findAll() throws SQLException {
+    public List<keskustelu> findAll() throws SQLException {
 
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu");
 
         ResultSet rs = stmt.executeQuery();
-        List<Keskustelu> keskustelut = new ArrayList<>();
+        List<keskustelu> keskustelut = new ArrayList<>();
 
-        Map<String, List<Keskustelu>> keskusteluidenAlueet = new HashMap<>();
+        Map<String, List<keskustelu>> keskusteluidenAlueet = new HashMap<>();
 
         while (rs.next()) {
 
             Integer id = rs.getInt("id");
             String aihe = rs.getString("aihe");
 
-            Keskustelu k = new Keskustelu(id, aihe);
+            keskustelu k = new keskustelu(id, aihe);
             keskustelut.add(k);
 
             String alue = rs.getString("alue");
@@ -84,7 +84,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         return keskustelut;
     }
 
-    public List<Keskustelu> findAllIn(Integer alueenId) throws SQLException {
+    public List<keskustelu> findAllIn(Integer alueenId) throws SQLException {
         if (alueenId == null) {
             return new ArrayList<>();
         }
@@ -106,13 +106,13 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 //        }
 
         ResultSet rs = stmt.executeQuery();
-        List<Keskustelu> keskustelut = new ArrayList<>();
+        List<keskustelu> keskustelut = new ArrayList<>();
         while (rs.next()) {
             Integer id = rs.getInt("id");
             String aihe = rs.getString("aihe");
             AlueDao a = new AlueDao(database);
             Alue ab = a.findOne(id);
-            keskustelut.add(new Keskustelu(id, ab, aihe));
+            keskustelut.add(new keskustelu(id, ab, aihe));
         }
 
         return keskustelut;

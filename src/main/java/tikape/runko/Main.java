@@ -68,30 +68,30 @@ public class Main {
             HashMap map = new HashMap<>();
             map.put("keskustelu", keskusteluDao.findOne(Integer.parseInt(req.params("id"))));
             map.put("viestit", viestiDao.findAllIn(Integer.parseInt(req.params("id"))));
+            map.put("id", Integer.parseInt(req.params("id")));
 
             return new ModelAndView(map, "keskustelut");
         }, new ThymeleafTemplateEngine());
 
         post("/keskustelut/:id", (req, res) -> {
             String sisalto = req.queryParams("sisalto"); //teoriassa tän pitäisi hakea sieltä html sivulta tuo "sisalto" 
-            int luku = Integer.parseInt(req.params(":id")); // tää ei jostain syystä parseta tota post otsikossa olevaa "id"tä
+            int luku = Integer.parseInt(req.params("id")); // tää ei jostain syystä parseta tota post otsikossa olevaa "id"tä
             int id = viestiDao.palautaSuurinId(); // katso viestidao luokka, tein tommosen purkkametodin
 //            Viesti v = new Viesti(id, k, new Timestamp(d.getTime()), sisalto); // uusi viesti
-            
+            keskustelu k = keskusteluDao.findOne(luku);
             Connection connection = database.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO Viesti (?, ?, ?, ?);");
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO Viesti VALUES(?, ?, ?, ?);");
             stmt.setInt(1, id);
             stmt.setTimestamp(2, new Timestamp(d.getTime()));
             stmt.setString(3, sisalto);
-//            stmt.setObject(4, k);
+            stmt.setObject(4, luku);
             
             stmt.execute();
             
             stmt.close();
             connection.close(); // Tein tällaisen härpäkkeen uuden viestin lähetystä varten
                                 // toimivuudesta en tosiaan tiedä! :)
-            res.redirect("/keskustelut/:id");
+            res.redirect("/keskustelut/" + luku);
             return "";
         });
     }

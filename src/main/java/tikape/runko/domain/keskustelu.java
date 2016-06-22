@@ -3,20 +3,20 @@ package tikape.runko.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Keskustelu {
+public class keskustelu {
 
     private Integer id;
     private Alue alue;
     private String aihe;
     private List<Viesti> viestit;
 
-    public Keskustelu(Integer id, String aihe) {
+    public keskustelu(Integer id, String aihe) {
         this.id = id;
         this.aihe = aihe;
         this.viestit = new ArrayList<>();
     }
 
-    public Keskustelu(Integer id, Alue alue, String aihe) {
+    public keskustelu(Integer id, Alue alue, String aihe) {
        this.id = id;
        this.alue = alue;
        this.aihe = aihe;

@@ -7,7 +7,7 @@ public class Alue {
     
     private Integer id;
     private String nimi;
-    private List<Keskustelu> keskustelut;
+    private List<keskustelu> keskustelut;
 
     public Alue(int id, String nimi) {
         this.nimi = nimi;

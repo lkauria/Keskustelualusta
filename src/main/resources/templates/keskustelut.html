@@ -16,7 +16,7 @@
             </li>
         </ol>
         <div>Osallistu keskusteluun:</div>
-        <form method="POST" action="@{/keskustelut/id}">
+        <form method="POST" th:action="@{~/keskustelut/{id}(id=${keskustelu.id})}"> <!-- MITÄ VIHHUA TÄHÄN -->
             <textarea name="sisalto" rows="4" cols="50"></textarea><br/> <!-- tein tällaisen tekstiboksin -->
             <input type="submit" value="Lähetä viesti"/>
         </form>
