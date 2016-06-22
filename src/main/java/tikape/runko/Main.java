@@ -1,9 +1,7 @@
 package tikape.runko;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import spark.ModelAndView;
@@ -11,16 +9,15 @@ import static spark.Spark.*;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 import tikape.runko.database.Database;
 import tikape.runko.database.AlueDao;
+import tikape.runko.database.KeskusteluDao;
 import tikape.runko.database.*;
-import tikape.runko.domain.*;
-import java.util.Date;
+import tikape.runko.domain.Keskustelu;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
         Database database = new Database("jdbc:sqlite:keskustelualue.db");
-        //database.init();
-        Date d = new java.util.Date(); // Lisäsin date-olion millä saa Timestampin viestiin
+
         AlueDao alueDao = new AlueDao(database);
         KeskusteluDao keskusteluDao = new KeskusteluDao(database);
         ViestiDao viestiDao = new ViestiDao(database);
@@ -34,65 +31,66 @@ public class Main {
 
         get("/alueet", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("alueet", alueDao.findAll());
+            map.put("alueet", alueDao.alueListaus());
 
             return new ModelAndView(map, "alueet");
         }, new ThymeleafTemplateEngine());
 
-        get("/alueet/:id", (req, res) -> {
+        get("/alue/:id", (req, res) -> {
             HashMap map = new HashMap<>();
             map.put("alue", alueDao.findOne(Integer.parseInt(req.params("id"))));
-            map.put("keskustelut", keskusteluDao.findAllIn(Integer.parseInt(req.params("id"))));
+            map.put("keskustelut", keskusteluDao.keskusteluListaus(Integer.parseInt(req.params("id"))));
 
             return new ModelAndView(map, "alue");
         }, new ThymeleafTemplateEngine());
 
-        post("/alueet", (req, res) -> {
-            int id = alueDao.palautaUusiId();
-            String aihe = req.queryParams("nimi");
-            Connection connection = database.getConnection();
-            PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO Alue VALUES (?, ?)");
-            
-            stmt.setInt(1, id);
-            stmt.setString(2, aihe);
-            stmt.execute();
-            stmt.close();
-            connection.close();
-            res.redirect("/alueet");
-            return "";
-            
-        });
-
-        get("/keskustelut/:id", (req, res) -> {
+        get("/keskustelu/:id", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("keskustelu", keskusteluDao.findOne(Integer.parseInt(req.params("id"))));
-            map.put("viestit", viestiDao.findAllIn(Integer.parseInt(req.params("id"))));
-            map.put("id", Integer.parseInt(req.params("id")));
+            Keskustelu k = keskusteluDao.findOne(Integer.parseInt(req.params("id")));
+            map.put("alue", alueDao.findOne(k.getAlue().getId()));
+            map.put("keskustelu", keskusteluDao.findOne(k.getId()));
+            map.put("viestit", viestiDao.findAllIn(k.getId()));
 
-            return new ModelAndView(map, "keskustelut");
+            return new ModelAndView(map, "keskustelu");
         }, new ThymeleafTemplateEngine());
 
-        post("/keskustelut/:id", (req, res) -> {
-            String sisalto = req.queryParams("sisalto"); //teoriassa tän pitäisi hakea sieltä html sivulta tuo "sisalto" 
-            int luku = Integer.parseInt(req.params("id")); // tää ei jostain syystä parseta tota post otsikossa olevaa "id"tä
-            int id = viestiDao.palautaSuurinId(); // katso viestidao luokka, tein tommosen purkkametodin
-//            Viesti v = new Viesti(id, k, new Timestamp(d.getTime()), sisalto); // uusi viesti
-            keskustelu k = keskusteluDao.findOne(luku);
+        post("/alueet", (req, res) -> {
+            String alue = req.queryParams("alue");
             Connection connection = database.getConnection();
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO Viesti VALUES(?, ?, ?, ?);");
-            stmt.setInt(1, id);
-            stmt.setTimestamp(2, new Timestamp(d.getTime()));
-            stmt.setString(3, sisalto);
-            stmt.setObject(4, luku);
-            
-            stmt.execute();
-            
-            stmt.close();
-            connection.close(); // Tein tällaisen härpäkkeen uuden viestin lähetystä varten
-                                // toimivuudesta en tosiaan tiedä! :)
-            res.redirect("/keskustelut/" + luku);
-            return "";
+            Statement st = connection.createStatement();
+            st.executeUpdate("INSERT INTO Alue (nimi) VALUES ('" + alue + "');");
+            st.close();
+            connection.close();
+            return "Alue lisätty.";
         });
+
+        post("/alue", (req, res) -> {
+            Integer alue_id = Integer.parseInt(req.queryParams("alue_id"));
+            String aihe = req.queryParams("aihe");
+            String viesti = req.queryParams("viesti");
+            Connection connection = database.getConnection();
+            Statement st = connection.createStatement();
+            st.executeUpdate("INSERT INTO Keskustelu (aihe, alue) VALUES ('" + aihe + "', " + alue_id + ");");
+            st.close();           
+            List<Keskustelu> keskustelut = keskusteluDao.findAll();
+            Integer keskustelu_id = keskustelut.size();
+            st = connection.createStatement();
+            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', " + keskustelu_id + ");");
+            st.close();
+            connection.close();
+            return "Viesti lähetetty.";
+        });
+
+        post("/keskustelu", (req, res) -> {
+            Integer keskustelu_id = Integer.parseInt(req.queryParams("keskustelu_id"));
+            String viesti = req.queryParams("viesti");
+            Connection connection = database.getConnection();
+            Statement st = connection.createStatement();
+            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', " + keskustelu_id + ");");
+            st.close();
+            connection.close();
+            return "Viesti lähetetty.";
+        });
+
     }
 }

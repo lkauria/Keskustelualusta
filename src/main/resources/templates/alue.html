@@ -2,26 +2,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title>Otsikko</title>
+        <title>Keskustelualue</title>
         <meta charset="utf-8" />
     </head>
 
     <body>
-        <h1><span th:text="${alue.nimi}"></span></h1>
+        <table>
+            <tr><td><b>Alue: <span th:text="${alue.nimi}"></span></b></td><td><b>Viestejä</b></td><td><b>Viimeisin viesti</b></td></tr>
 
-        <p>Olet saapunut alueelle <span th:text="${alue.nimi}">alue</span></p>
-        <ol>
-            <li th:each="keskustelu: ${keskustelut}">
-                <span th:text="${keskustelu.aihe}">keskustelun nimi</span> <a th:href="${'/keskustelut/' + keskustelu.id}">linkki</a>
-            </li>
-        </ol>
+            <ul th:each="keskustelu: ${keskustelut}">
+                <tr><td><a th:href="${'/keskustelu/' + keskustelu.id}"><span th:text="${keskustelu.aihe}"></span></a></td>
+                    <td><span th:text="${keskustelu.viestien_lkm}"></span></td>
+                    <td><span th:text="${keskustelu.viimeisin}"></span></td></tr>
+            </ul>
+        </table>
+        <br/>
         <div>Aloita uusi keskustelu:</div>
-        <form method="POST" action="/keskustelu/">
+        <form method="POST" action="/alue">
+            <input type="hidden" name="alue_id" th:value="${alue.id}"/>
             Otsikko:<br/>
             <input type="text" name="aihe"/><br/>
             Aloitusviesti:<br/>
-            <textarea rows="4" cols="50" name="viesti"></textarea> <br/>
-<!--            <input type="text" name="viesti"/><br/>-->
+            <input type="text" name="viesti"/><br/>
             <input type="submit" value="Aloita keskustelu"/>
         </form>
     </body>

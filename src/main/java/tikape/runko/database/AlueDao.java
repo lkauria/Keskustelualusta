@@ -9,11 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import tikape.runko.domain.Alue;
-import tikape.runko.domain.keskustelu;
 
 public class AlueDao implements Dao<Alue, Integer> {
 
@@ -21,6 +20,29 @@ public class AlueDao implements Dao<Alue, Integer> {
 
     public AlueDao(Database database) {
         this.database = database;
+    }
+
+    public List<Alue> alueListaus() throws SQLException {
+
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT Alue.id AS id, Alue.nimi AS nimi, COUNT(Viesti.id) AS lkm, MAX(Viesti.aika) AS viimeisin FROM Alue LEFT JOIN Keskustelu LEFT JOIN Viesti ON Alue.id = Keskustelu.alue AND Keskustelu.id = Viesti.keskustelu GROUP BY Alue.nimi ORDER BY Alue.id");
+
+        ResultSet rs = stmt.executeQuery();
+        List<Alue> alueet = new ArrayList<>();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String nimi = rs.getString("nimi");
+            int lkm = rs.getInt("lkm");
+            Timestamp viimeisin = rs.getTimestamp("viimeisin");
+
+            alueet.add(new Alue(id, nimi, lkm, viimeisin));
+        }
+
+        rs.close();
+        stmt.close();
+        connection.close();
+
+        return alueet;
     }
 
     public Alue findOne(Integer key) throws SQLException {
@@ -76,17 +98,6 @@ public class AlueDao implements Dao<Alue, Integer> {
     @Override
     public List<Alue> findAllIn(Integer key) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public int palautaUusiId() throws SQLException {
-        List<Alue> alueet = this.findAll();
-        int id = 0;
-        for (Alue a : alueet) {
-            if (a.getId() > id) {
-                id = a.getId();
-            }
-        }
-        return id + 1;
     }
 
 }

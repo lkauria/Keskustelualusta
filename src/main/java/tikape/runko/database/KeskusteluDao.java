@@ -11,15 +11,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import tikape.runko.domain.Alue;
-import tikape.runko.domain.keskustelu;
-import tikape.runko.domain.Viesti;
+import tikape.runko.domain.Keskustelu;
 
-public class KeskusteluDao implements Dao<keskustelu, Integer> {
+public class KeskusteluDao implements Dao<Keskustelu, Integer> {
 
     private Database database;
 
@@ -27,7 +25,28 @@ public class KeskusteluDao implements Dao<keskustelu, Integer> {
         this.database = database;
     }
 
-    public keskustelu findOne(Integer key) throws SQLException {
+    public List<Keskustelu> keskusteluListaus(Integer alueenId) throws SQLException {
+        if (alueenId == null) {
+            return new ArrayList<>();
+        }
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT Keskustelu.id AS id, Keskustelu.aihe AS aihe, COUNT(Viesti.id) AS viestien_lkm, MAX(Viesti.aika) AS viimeisin FROM Keskustelu, Viesti WHERE Keskustelu.id = Viesti.keskustelu AND Keskustelu.alue = ? GROUP BY Keskustelu.id");
+        stmt.setInt(1, alueenId);
+
+        ResultSet rs = stmt.executeQuery();
+        List<Keskustelu> keskustelut = new ArrayList<>();
+        while (rs.next()) {
+            Integer id = rs.getInt("id");
+            String aihe = rs.getString("aihe");
+            Integer viestien_lkm = rs.getInt("viestien_lkm");
+            Timestamp viimeisin = rs.getTimestamp("viimeisin");
+            keskustelut.add(new Keskustelu(id, aihe, viestien_lkm, viimeisin));
+        }
+
+        return keskustelut;
+    }
+
+    public Keskustelu findOne(Integer key) throws SQLException {
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu WHERE id = ?");
         stmt.setObject(1, key);
@@ -39,34 +58,38 @@ public class KeskusteluDao implements Dao<keskustelu, Integer> {
         }
 
         Integer id = rs.getInt("id");
-        Alue a = new AlueDao(database).findOne(id);
         String aihe = rs.getString("aihe");
-        keskustelu o = new keskustelu(id, a, aihe);
+        Keskustelu k = new Keskustelu(id, aihe);
+
+        Integer alue = rs.getInt("alue");
 
         rs.close();
         stmt.close();
         connection.close();
+        
+        AlueDao alueDao = new AlueDao(database);
+        k.setAlue(alueDao.findOne(alue));
 
-        return o;
+        return k;
     }
 
     @Override
-    public List<keskustelu> findAll() throws SQLException {
+    public List<Keskustelu> findAll() throws SQLException {
 
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu");
 
         ResultSet rs = stmt.executeQuery();
-        List<keskustelu> keskustelut = new ArrayList<>();
+        List<Keskustelu> keskustelut = new ArrayList<>();
 
-        Map<String, List<keskustelu>> keskusteluidenAlueet = new HashMap<>();
+        Map<String, List<Keskustelu>> keskusteluidenAlueet = new HashMap<>();
 
         while (rs.next()) {
 
             Integer id = rs.getInt("id");
             String aihe = rs.getString("aihe");
 
-            keskustelu k = new keskustelu(id, aihe);
+            Keskustelu k = new Keskustelu(id, aihe);
             keskustelut.add(k);
 
             String alue = rs.getString("alue");
@@ -84,37 +107,25 @@ public class KeskusteluDao implements Dao<keskustelu, Integer> {
         return keskustelut;
     }
 
-    public List<keskustelu> findAllIn(Integer alueenId) throws SQLException {
+    public List<Keskustelu> findAllIn(Integer alueenId) throws SQLException {
         if (alueenId == null) {
             return new ArrayList<>();
         }
 
-        // Luodaan IN-kyselyä varten paikat, joihin arvot asetetaan --
-        // toistaiseksi IN-parametrille ei voi antaa suoraan kokoelmaa
-//        StringBuilder muuttujat = new StringBuilder("?");
-//        for (int i = 1; i < alueenNimi.size(); i++) {
-//            muuttujat.append(", ?");
-//        }
-
         Connection connection = database.getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Keskustelu WHERE alue = ?");
         stmt.setInt(1, alueenId);
-        int laskuri = 1;
-//        for (Integer key : keys) {
-//            stmt.setObject(laskuri, key);
-//            laskuri++;
-//        }
 
         ResultSet rs = stmt.executeQuery();
-        List<keskustelu> keskustelut = new ArrayList<>();
+        List<Keskustelu> keskustelut = new ArrayList<>();
         while (rs.next()) {
             Integer id = rs.getInt("id");
             String aihe = rs.getString("aihe");
             AlueDao a = new AlueDao(database);
             Alue ab = a.findOne(id);
-            keskustelut.add(new keskustelu(id, ab, aihe));
+            keskustelut.add(new Keskustelu(id, ab, aihe));
         }
-
+        
         return keskustelut;
     }
 
@@ -123,10 +134,4 @@ public class KeskusteluDao implements Dao<keskustelu, Integer> {
         // ei toteutettu
     }
 
-    //@Override
-    //public Keskustelu findOne(Integer key) throws SQLException {
-    // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    //}
-
-  
 }

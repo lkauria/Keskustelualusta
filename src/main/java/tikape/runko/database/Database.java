@@ -39,14 +39,9 @@ public class Database {
         ArrayList<String> lista = new ArrayList<>();
 
         // tietokantataulujen luomiseen tarvittavat komennot suoritusjärjestyksessä
-        lista.add("CREATE TABLE Alue (id integer, PRIMARY KEY, nimi varchar);");
-        lista.add("CREATE TABLE Keskustelu(id integer PRIMARY KEY,aihe varchar(100) NOT NULL,alue varchar(100) NOT NULL,FOREIGN KEY(alue) REFERENCES Alue(nimi));");
-        lista.add("CREATE TABLE Viesti (aika timestamp NOT NULL, sisalto varchar(5000) NOT NULL, keskustelu integer NOT NULL,FOREIGN KEY(keskustelu) REFERENCES Keskustelu(id));");
-        lista.add("INSERT INTO Alue (nimi) VALUES ('Ohjelmointi');");
-        lista.add("INSERT INTO Alue (nimi) VALUES ('Urheilu');");
-        lista.add("INSERT INTO Alue (nimi) VALUES ('Uutiset');");
-        lista.add("INSERT INTO Keskustelu (aihe, alue) VALUES ('Java', 'Ohjelmointi');");
-        lista.add("INSERT INTO Keskustelu (aihe, alue) VALUES ('Lisp', 'Ohjelmointi');");
+        lista.add("CREATE TABLE Alue (id integer PRIMARY KEY, nimi varchar(100));");
+        lista.add("CREATE TABLE Keskustelu (id integer PRIMARY KEY, aihe varchar(100) NOT NULL, alue integer NOT NULL, FOREIGN KEY(alue) REFERENCES Alue(id));");
+        lista.add("CREATE TABLE Viesti (id integer PRIMARY KEY, aika timestamp NOT NULL, sisalto varchar(5000) NOT NULL, keskustelu integer NOT NULL, FOREIGN KEY(keskustelu) REFERENCES Keskustelu(id));");
 
         return lista;
     }
