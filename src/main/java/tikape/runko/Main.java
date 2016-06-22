@@ -1,5 +1,7 @@
 package tikape.runko;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,8 +45,18 @@ public class Main {
             return new ModelAndView(map, "alue");
         }, new ThymeleafTemplateEngine());
 
-        post("/alueet/:id", (req, res) -> {
-            //ei toimi
+        post("/alueet", (req, res) -> {
+            int id = alueDao.palautaUusiId();
+            String aihe = req.queryParams("nimi");
+            Connection connection = database.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO Alue VALUES (?, ?)");
+            
+            stmt.setInt(1, id);
+            stmt.setString(2, aihe);
+            stmt.execute();
+            stmt.close();
+            connection.close();
             return "Alue lisätty.";
         });
 

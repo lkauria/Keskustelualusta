@@ -67,6 +67,17 @@ public class AlueDao implements Dao<Alue, Integer> {
 
         return alueet;
     }
+    
+    public int palautaUusiId() throws SQLException {
+        List<Alue> alueet = this.findAll();
+        int id = 0;
+        for (Alue a : alueet) {
+            if (a.getId() > id) {
+                id = a.getId();
+            }
+        }
+        return id + 1;
+    }
 
     @Override
     public void delete(Integer key) throws SQLException {
