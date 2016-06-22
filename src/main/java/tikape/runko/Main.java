@@ -1,4 +1,4 @@
-﻿package tikape.runko;
+package tikape.runko;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,8 +59,8 @@ public class Main {
             stmt.execute();
             stmt.close();
             connection.close();
-            return "Alue lisätty." +
-                    "<a th:href=\"${'/alueet/>linkki</a>";
+            res.redirect("/alueet");
+            return "";
             
         });
 
@@ -69,14 +69,14 @@ public class Main {
             map.put("keskustelu", keskusteluDao.findOne(Integer.parseInt(req.params("id"))));
             map.put("viestit", viestiDao.findAllIn(Integer.parseInt(req.params("id"))));
 
-            return new ModelAndView(map, "keskustelu");
+            return new ModelAndView(map, "keskustelut");
         }, new ThymeleafTemplateEngine());
 
         post("/keskustelut/:id", (req, res) -> {
-            String sisalto = req.params("sisalto"); //teoriassa tän pitäisi hakea sieltä html sivulta tuo "sisalto" 
-            Keskustelu k = keskusteluDao.findOne(Integer.parseInt(req.params("id"))); //id parsetetaan ja sillä etsitään oikea keskustelu
+            String sisalto = req.queryParams("sisalto"); //teoriassa tän pitäisi hakea sieltä html sivulta tuo "sisalto" 
+            int luku = Integer.parseInt(req.params(":id")); // tää ei jostain syystä parseta tota post otsikossa olevaa "id"tä
             int id = viestiDao.palautaSuurinId(); // katso viestidao luokka, tein tommosen purkkametodin
-            Viesti v = new Viesti(id, k, new Timestamp(d.getTime()), sisalto); // uusi viesti
+//            Viesti v = new Viesti(id, k, new Timestamp(d.getTime()), sisalto); // uusi viesti
             
             Connection connection = database.getConnection();
             PreparedStatement stmt = connection.prepareStatement(
@@ -84,14 +84,15 @@ public class Main {
             stmt.setInt(1, id);
             stmt.setTimestamp(2, new Timestamp(d.getTime()));
             stmt.setString(3, sisalto);
-            stmt.setObject(4, k);
+//            stmt.setObject(4, k);
             
             stmt.execute();
             
             stmt.close();
             connection.close(); // Tein tällaisen härpäkkeen uuden viestin lähetystä varten
                                 // toimivuudesta en tosiaan tiedä! :)
-            return "Viesti lähetetty.";
+            res.redirect("/keskustelut/:id");
+            return "";
         });
     }
 }

@@ -7,12 +7,18 @@
     </head>
 
     <body>
-        <h1>Keskustelualue</h1>
+        <h1><span th:text="${keskustelu.aihe}">keskustelu</span></h1>
 
+        <p>Olet saapunut keskusteluun <span th:text="${keskustelu.aihe}"></span></p>
         <ol>
-            <li th:each="keskustelu: ${keskustelut}">
-                <span th:text="${keskustelu.aihe}">keskustelun aihe</span> <a th:href="${'/keskustelut/' + keskustelu.id}">linkki</a>
+            <li th:each="viesti: ${viestit}">
+                <span th:text="${viesti.sisalto}">viesti</span>
             </li>
         </ol>
+        <div>Osallistu keskusteluun:</div>
+        <form method="POST" action="@{/keskustelut/id}">
+            <textarea name="sisalto" rows="4" cols="50"></textarea><br/> <!-- tein tällaisen tekstiboksin -->
+            <input type="submit" value="Lähetä viesti"/>
+        </form>
     </body>
 </html>
