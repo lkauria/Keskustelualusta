@@ -51,6 +51,19 @@ public class ViestiDao implements Dao<Viesti, Integer> {
         return o;
     }
 
+    public int palautaSuurinId() throws SQLException { //En keksinyt järkevää tapaa saada "seuraavaa id:tä" uudelle viestille,
+                                                       // joten tein tällaisen metodin :)
+        List<Viesti> viestit = this.findAll();
+        int id = 0;
+        for (Viesti v : viestit) {
+            int luku = v.getId();
+            if (luku > id) {
+                id = luku;
+            }
+        }
+        return id + 1;
+    }
+
     @Override
     public List<Viesti> findAll() throws SQLException {
 
