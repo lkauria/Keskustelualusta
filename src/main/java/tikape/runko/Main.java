@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.HashMap;
 import spark.ModelAndView;
+import spark.Spark;
 import static spark.Spark.*;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 import tikape.runko.database.Database;
@@ -20,6 +21,8 @@ public class Main {
         AlueDao alueDao = new AlueDao(database);
         KeskusteluDao keskusteluDao = new KeskusteluDao(database);
         ViestiDao viestiDao = new ViestiDao(database);
+        staticFileLocation("/templates");
+        
 
         get("/", (req, res) -> {
             HashMap map = new HashMap<>();
