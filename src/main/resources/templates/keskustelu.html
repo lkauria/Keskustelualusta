@@ -21,7 +21,7 @@
         <form method="POST" action="/keskustelu">
             <input type="hidden" name="keskustelu_id" th:value="${keskustelu.id}"/>
             Viesti:<br/>
-            <input type="text" name="viesti"/><br/>
+            <textarea name="viesti" rows="4" cols="50"></textarea><br/>
             Lähettäjä:<br/>
             <input type="text" name="nimimerkki"/><br/>
             <input type="submit" value="Lähetä viesti"/>

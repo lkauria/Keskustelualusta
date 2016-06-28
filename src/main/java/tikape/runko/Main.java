@@ -54,7 +54,8 @@ public class Main {
             st.executeUpdate("INSERT INTO Alue (nimi) VALUES ('" + alue + "');");
             st.close();
             connection.close();
-            return "Alue lisätty.";
+            res.redirect("/");
+            return "";
         });
 
         post("/alue", (req, res) -> {
@@ -72,7 +73,8 @@ public class Main {
             st.executeUpdate("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', '" + nimimerkki + "', " + keskustelu_id + ");");
             st.close();
             connection.close();
-            return "Viesti lähetetty.";
+            res.redirect("/alue/" + alue_id);
+            return "";
         });
 
         post("/keskustelu", (req, res) -> {
@@ -84,7 +86,8 @@ public class Main {
             st.executeUpdate("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', '" + nimimerkki + "', " + keskustelu_id + ");");
             st.close();
             connection.close();
-            return "Viesti lähetetty.";
+            res.redirect("/keskustelu/" + keskustelu_id);
+            return "";
         });
 
     }
