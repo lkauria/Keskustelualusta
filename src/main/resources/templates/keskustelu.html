@@ -9,10 +9,11 @@
     <body>
 
         <div><b>Alue: <span th:text="${alue.nimi}"></span> --> <span th:text="${keskustelu.aihe}">keskustelu</span></b></div>
-        
+
         <ol>
             <li th:each="viesti: ${viestit}">
                 <span th:text="${viesti.sisalto}">viesti</span>
+                <span th:text="${viesti.nimimerkki}">nimimerkki</span>
             </li>
         </ol>       
         <br/>
@@ -21,6 +22,8 @@
             <input type="hidden" name="keskustelu_id" th:value="${keskustelu.id}"/>
             Viesti:<br/>
             <input type="text" name="viesti"/><br/>
+            Lähettäjä:<br/>
+            <input type="text" name="nimimerkki"/><br/>
             <input type="submit" value="Lähetä viesti"/>
         </form>
     </body>

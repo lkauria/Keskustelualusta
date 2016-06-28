@@ -7,8 +7,20 @@
     </head>
 
     <body>
-        <h1>Tervetuloa keskustelualueelle!</h1>
-
-        <p><a href="/alueet">Tästä listaukseen.</a></p>
+        <table>
+            <tr><td><b>Alue</b></td><td><b>Viestejä yhteensä</b></td><td><b>Viimeisin viesti</b></td></tr>
+            <ul th:each="alue: ${alueet}">
+                <tr><td><a th:href="${'/alue/' + alue.id}"><span th:text="${alue.nimi}"></span></a></td>
+                    <td><span th:text="${alue.lkm}"></span></td>
+                    <td><span th:text="${alue.viimeisin}"></span></td></tr>
+            </ul>
+        </table>
+        <br/>
+        <div>Lisää uusi alue:</div>
+        <form method="POST" action="/alueet">
+            Uusi alue:<br/>
+            <input type="text" name="alue"/><br/>
+            <input type="submit" value="Lisää alue"/>
+        </form>
     </body>
 </html>

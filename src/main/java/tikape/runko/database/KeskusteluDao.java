@@ -30,7 +30,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
             return new ArrayList<>();
         }
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT Keskustelu.id AS id, Keskustelu.aihe AS aihe, COUNT(Viesti.id) AS viestien_lkm, MAX(Viesti.aika) AS viimeisin FROM Keskustelu, Viesti WHERE Keskustelu.id = Viesti.keskustelu AND Keskustelu.alue = ? GROUP BY Keskustelu.id");
+        PreparedStatement stmt = connection.prepareStatement("SELECT Keskustelu.id AS id, Keskustelu.aihe AS aihe, COUNT(Viesti.id) AS viestien_lkm, MAX(Viesti.aika) AS viimeisin FROM Keskustelu, Viesti WHERE Keskustelu.id = Viesti.keskustelu AND Keskustelu.alue = ? GROUP BY Keskustelu.id ORDER BY viimeisin DESC LIMIT 10");
         stmt.setInt(1, alueenId);
 
         ResultSet rs = stmt.executeQuery();

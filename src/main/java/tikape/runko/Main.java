@@ -24,16 +24,9 @@ public class Main {
 
         get("/", (req, res) -> {
             HashMap map = new HashMap<>();
-            map.put("viesti", "tervehdys");
-
-            return new ModelAndView(map, "index");
-        }, new ThymeleafTemplateEngine());
-
-        get("/alueet", (req, res) -> {
-            HashMap map = new HashMap<>();
             map.put("alueet", alueDao.alueListaus());
 
-            return new ModelAndView(map, "alueet");
+            return new ModelAndView(map, "index");
         }, new ThymeleafTemplateEngine());
 
         get("/alue/:id", (req, res) -> {
@@ -54,7 +47,7 @@ public class Main {
             return new ModelAndView(map, "keskustelu");
         }, new ThymeleafTemplateEngine());
 
-        post("/alueet", (req, res) -> {
+        post("/", (req, res) -> {
             String alue = req.queryParams("alue");
             Connection connection = database.getConnection();
             Statement st = connection.createStatement();
@@ -68,6 +61,7 @@ public class Main {
             Integer alue_id = Integer.parseInt(req.queryParams("alue_id"));
             String aihe = req.queryParams("aihe");
             String viesti = req.queryParams("viesti");
+            String nimimerkki = req.queryParams("nimimerkki");
             Connection connection = database.getConnection();
             Statement st = connection.createStatement();
             st.executeUpdate("INSERT INTO Keskustelu (aihe, alue) VALUES ('" + aihe + "', " + alue_id + ");");
@@ -75,7 +69,7 @@ public class Main {
             List<Keskustelu> keskustelut = keskusteluDao.findAll();
             Integer keskustelu_id = keskustelut.size();
             st = connection.createStatement();
-            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', " + keskustelu_id + ");");
+            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', '" + nimimerkki + "', " + keskustelu_id + ");");
             st.close();
             connection.close();
             return "Viesti lähetetty.";
@@ -84,9 +78,10 @@ public class Main {
         post("/keskustelu", (req, res) -> {
             Integer keskustelu_id = Integer.parseInt(req.queryParams("keskustelu_id"));
             String viesti = req.queryParams("viesti");
+            String nimimerkki = req.queryParams("nimimerkki");
             Connection connection = database.getConnection();
             Statement st = connection.createStatement();
-            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', " + keskustelu_id + ");");
+            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', '" + nimimerkki + "', " + keskustelu_id + ");");
             st.close();
             connection.close();
             return "Viesti lähetetty.";

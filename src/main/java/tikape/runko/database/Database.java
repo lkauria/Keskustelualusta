@@ -41,7 +41,7 @@ public class Database {
         // tietokantataulujen luomiseen tarvittavat komennot suoritusjärjestyksessä
         lista.add("CREATE TABLE Alue (id integer PRIMARY KEY, nimi varchar(100));");
         lista.add("CREATE TABLE Keskustelu (id integer PRIMARY KEY, aihe varchar(100) NOT NULL, alue integer NOT NULL, FOREIGN KEY(alue) REFERENCES Alue(id));");
-        lista.add("CREATE TABLE Viesti (id integer PRIMARY KEY, aika timestamp NOT NULL, sisalto varchar(5000) NOT NULL, keskustelu integer NOT NULL, FOREIGN KEY(keskustelu) REFERENCES Keskustelu(id));");
+        lista.add("CREATE TABLE Viesti (id integer PRIMARY KEY, aika timestamp NOT NULL, sisalto varchar(5000) NOT NULL, nimimerkki varchar(100) NOT NULL, keskustelu integer NOT NULL, FOREIGN KEY(keskustelu) REFERENCES Keskustelu(id));");
 
         return lista;
     }

@@ -1,21 +1,28 @@
-
 package tikape.runko.domain;
 
 import java.sql.Timestamp;
 
-
 public class Viesti {
-    
+
     private Integer id;
     private Keskustelu keskustelu;
     private Timestamp aika;
     private String sisalto;
+    private String nimimerkki;
 
     public Viesti(Integer id, Keskustelu keskustelu, Timestamp aika, String sisalto) {
         this.id = id;
         this.keskustelu = keskustelu;
         this.aika = aika;
         this.sisalto = sisalto;
+    }
+
+    public Viesti(Integer id, Keskustelu keskustelu, Timestamp aika, String sisalto, String nimimerkki) {
+        this.id = id;
+        this.keskustelu = keskustelu;
+        this.aika = aika;
+        this.sisalto = sisalto;
+        this.nimimerkki = nimimerkki;
     }
 
     public Viesti(Timestamp aika, String sisalto) {
@@ -43,6 +50,10 @@ public class Viesti {
         return sisalto;
     }
 
+    public String getNimimerkki() {
+        return nimimerkki;
+    }
+
     public void setKeskustelu(Keskustelu keskustelu) {
         this.keskustelu = keskustelu;
     }
@@ -53,6 +64,10 @@ public class Viesti {
 
     public void setSisalto(String sisalto) {
         this.sisalto = sisalto;
+    }
+
+    public void setNimimerkki(String nimimerkki) {
+        this.nimimerkki = nimimerkki;
     }
 
 }

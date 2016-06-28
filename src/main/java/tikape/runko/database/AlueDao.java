@@ -25,7 +25,7 @@ public class AlueDao implements Dao<Alue, Integer> {
     public List<Alue> alueListaus() throws SQLException {
 
         Connection connection = database.getConnection();
-        PreparedStatement stmt = connection.prepareStatement("SELECT Alue.id AS id, Alue.nimi AS nimi, COUNT(Viesti.id) AS lkm, MAX(Viesti.aika) AS viimeisin FROM Alue LEFT JOIN Keskustelu LEFT JOIN Viesti ON Alue.id = Keskustelu.alue AND Keskustelu.id = Viesti.keskustelu GROUP BY Alue.nimi ORDER BY Alue.id");
+        PreparedStatement stmt = connection.prepareStatement("SELECT Alue.id AS id, Alue.nimi AS nimi, COUNT(Viesti.id) AS lkm, MAX(Viesti.aika) AS viimeisin FROM Alue LEFT JOIN Keskustelu LEFT JOIN Viesti ON Alue.id = Keskustelu.alue AND Keskustelu.id = Viesti.keskustelu GROUP BY Alue.nimi ORDER BY Alue.nimi");
 
         ResultSet rs = stmt.executeQuery();
         List<Alue> alueet = new ArrayList<>();
