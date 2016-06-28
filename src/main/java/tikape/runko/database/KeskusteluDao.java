@@ -25,6 +25,17 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         this.database = database;
     }
 
+    public Integer haeSuurinId() throws SQLException {
+        Connection connection = database.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("SELECT MAX(Keskustelu.id) AS id FROM Keskustelu");
+        ResultSet rs = stmt.executeQuery();
+        Integer id = rs.getInt("id");
+        rs.close();
+        stmt.close();
+        connection.close();
+        return id;
+    }
+
     public List<Keskustelu> keskusteluListaus(Integer alueenId) throws SQLException {
         if (alueenId == null) {
             return new ArrayList<>();
@@ -42,6 +53,9 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
             Timestamp viimeisin = rs.getTimestamp("viimeisin");
             keskustelut.add(new Keskustelu(id, aihe, viestien_lkm, viimeisin));
         }
+        rs.close();
+        stmt.close();
+        connection.close();
 
         return keskustelut;
     }
@@ -66,7 +80,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
         rs.close();
         stmt.close();
         connection.close();
-        
+
         AlueDao alueDao = new AlueDao(database);
         k.setAlue(alueDao.findOne(alue));
 
@@ -125,7 +139,7 @@ public class KeskusteluDao implements Dao<Keskustelu, Integer> {
             Alue ab = a.findOne(id);
             keskustelut.add(new Keskustelu(id, ab, aihe));
         }
-        
+
         return keskustelut;
     }
 

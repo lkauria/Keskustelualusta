@@ -1,9 +1,8 @@
 package tikape.runko;
 
 import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.HashMap;
-import java.util.List;
 import spark.ModelAndView;
 import static spark.Spark.*;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
@@ -50,9 +49,10 @@ public class Main {
         post("/", (req, res) -> {
             String alue = req.queryParams("alue");
             Connection connection = database.getConnection();
-            Statement st = connection.createStatement();
-            st.executeUpdate("INSERT INTO Alue (nimi) VALUES ('" + alue + "');");
-            st.close();
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO Alue (nimi) VALUES (?)");
+            statement.setString(1, alue);
+            statement.execute();
+            statement.close();
             connection.close();
             res.redirect("/");
             return "";
@@ -64,14 +64,18 @@ public class Main {
             String viesti = req.queryParams("viesti");
             String nimimerkki = req.queryParams("nimimerkki");
             Connection connection = database.getConnection();
-            Statement st = connection.createStatement();
-            st.executeUpdate("INSERT INTO Keskustelu (aihe, alue) VALUES ('" + aihe + "', " + alue_id + ");");
-            st.close();           
-            List<Keskustelu> keskustelut = keskusteluDao.findAll();
-            Integer keskustelu_id = keskustelut.size();
-            st = connection.createStatement();
-            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', '" + nimimerkki + "', " + keskustelu_id + ");");
-            st.close();
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO Keskustelu (aihe, alue) VALUES (?, ?)");
+            statement.setString(1, aihe);
+            statement.setInt(2, alue_id);
+            statement.execute();
+            statement.close();
+            Integer keskustelu_id = keskusteluDao.haeSuurinId();
+            statement = connection.prepareStatement("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", ?, ?, ?)");
+            statement.setString(1, viesti);
+            statement.setString(2, nimimerkki);
+            statement.setInt(3, keskustelu_id);
+            statement.execute();
+            statement.close();
             connection.close();
             res.redirect("/alue/" + alue_id);
             return "";
@@ -82,9 +86,12 @@ public class Main {
             String viesti = req.queryParams("viesti");
             String nimimerkki = req.queryParams("nimimerkki");
             Connection connection = database.getConnection();
-            Statement st = connection.createStatement();
-            st.executeUpdate("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", '" + viesti + "', '" + nimimerkki + "', " + keskustelu_id + ");");
-            st.close();
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO Viesti (aika, sisalto, nimimerkki, keskustelu) VALUES (" + System.currentTimeMillis() + ", ?, ?, ?)");
+            statement.setString(1, viesti);
+            statement.setString(2, nimimerkki);
+            statement.setInt(3, keskustelu_id);
+            statement.execute();
+            statement.close();
             connection.close();
             res.redirect("/keskustelu/" + keskustelu_id);
             return "";
