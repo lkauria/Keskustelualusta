@@ -10,12 +10,18 @@
 
     <body>
         <table>
-            <tr><td><b>Alue: <span th:text="${alue.nimi}"></span></b></td><td><b>Viestejä</b></td><td><b>Viimeisin viesti</b></td></tr>
+            <tr>
+                <td><b>Alue: <span th:text="${alue.nimi}"></span></b></td>
+                <td><b>Viestejä</b></td>
+                <td><b>Viimeisin viesti</b></td>
+            </tr>
 
             <ul th:each="keskustelu: ${keskustelut}">
-                <tr><td><a th:href="${'/keskustelu/' + keskustelu.id}"><span th:text="${keskustelu.aihe}"></span></a></td>
+                <tr>
+                    <td><a th:href="${'/keskustelu/' + keskustelu.id}"><span th:text="${keskustelu.aihe}"></span></a></td>
                     <td><span th:text="${keskustelu.viestien_lkm}"></span></td>
-                    <td><span th:text="${keskustelu.viimeisin}"></span></td></tr>
+                    <td><span th:text="${keskustelu.viimeisin}"></span></td>
+                </tr>
             </ul>
         </table>
         <br/>
